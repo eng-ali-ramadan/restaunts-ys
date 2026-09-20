@@ -1,0 +1,66 @@
+﻿@model RestaurantSystem.Models.Dish
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Dish Details</h4>
+            <div>
+                <a asp-action="Edit" asp-route-id="@Model.DishId" class="btn btn-warning btn-sm">Edit</a>
+                <a asp-action="Dishes" class="btn btn-light btn-sm">Back to List</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center mb-3">
+                    <img src="@(Model.ImageUrl ?? "/images/default-dish.png")"
+                         alt="@Model.Name"
+                         class="img-fluid rounded shadow-sm border"
+                         style="max-height: 250px; width: 100%; object-fit: cover;" />
+                </div>
+                <div class="col-md-8">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th style="width: 30%;">Dish Name</th>
+                                <td>@Model.Name</td>
+                            </tr>
+                            <tr>
+                                <th>Category</th>
+                                <td>@(Model.Category?.Name ?? "No category")</td>
+                            </tr>
+                            <tr>
+                                <th>Price</th>
+                                <td>@Model.Price.ToString("C")</td>
+                            </tr>
+                            <tr>
+                                <th>Preparation Time</th>
+                                <td>@Model.PreparationTime min</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>@(string.IsNullOrWhiteSpace(Model.Description) ? "No description available" : Model.Description)</td>
+                            </tr>
+                            <tr>
+                                <th>Availability</th>
+                                <td>
+                                    @if (Model.IsSoldOut)
+                                    {
+                                        <span class="badge bg-danger">Sold Out</span>
+                                    }
+                                    else if (Model.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">Available</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Currently Unavailable</span>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
