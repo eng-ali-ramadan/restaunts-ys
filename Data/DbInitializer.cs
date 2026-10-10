@@ -116,7 +116,70 @@ namespace RestaurantSystem.Data
                 await context.Categories.AddRangeAsync(categories);
             }
 
-            // 4. Seed Extras (بدون أي تعديل حسب رغبتك)
+            // 4. Seed Ramadan menu items idempotently so existing databases are updated too.
+            var ramadanCategory = await context.Categories
+                .FirstOrDefaultAsync(c => c.Name == "رمضان");
+
+            if (ramadanCategory == null)
+            {
+                ramadanCategory = new Category
+                {
+                    Name = "رمضان",
+                    ImageUrl = "https://images.unsplash.com/photo-1547592180-85f173990554?w=800"
+                };
+                context.Categories.Add(ramadanCategory);
+                await context.SaveChangesAsync();
+            }
+
+            var kingOrder = await context.Dishes
+                .FirstOrDefaultAsync(d => d.Name == "طلب الملوك");
+
+            if (kingOrder != null)
+            {
+                kingOrder.Description = "فول وبيض وجبنة وبطاطس";
+                kingOrder.CategoryId = ramadanCategory.CategoryId;
+                kingOrder.IsAvailable = true;
+            }
+            else
+            {
+                // Keep a sensible default for fresh databases; existing prices are preserved above.
+                context.Dishes.Add(new Dish
+                {
+                    Name = "طلب الملوك",
+                    Description = "فول وبيض وجبنة وبطاطس",
+                    Price = 75.00m,
+                    ImageUrl = "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
+                    PreparationTime = 10,
+                    IsAvailable = true,
+                    CategoryId = ramadanCategory.CategoryId
+                });
+            }
+
+            var beansEggsPotatoes = await context.Dishes
+                .FirstOrDefaultAsync(d => d.Name == "فول وبيض وبطاطس");
+
+            if (beansEggsPotatoes == null)
+            {
+                context.Dishes.Add(new Dish
+                {
+                    Name = "فول وبيض وبطاطس",
+                    Description = "فول وبيض وبطاطس",
+                    Price = 60.00m,
+                    ImageUrl = "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
+                    PreparationTime = 10,
+                    IsAvailable = true,
+                    CategoryId = ramadanCategory.CategoryId
+                });
+            }
+            else
+            {
+                beansEggsPotatoes.Price = 60.00m;
+                beansEggsPotatoes.Description = "فول وبيض وبطاطس";
+                beansEggsPotatoes.CategoryId = ramadanCategory.CategoryId;
+                beansEggsPotatoes.IsAvailable = true;
+            }
+
+            // 5. Seed Extras (بدون أي تعديل حسب رغبتك)
             if (!await context.Extras.AnyAsync())
             {
                 var extras = new List<Extra>
